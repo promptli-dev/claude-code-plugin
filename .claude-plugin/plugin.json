@@ -1,0 +1,16 @@
+{
+  "name": "promptli-comms",
+  "version": "0.1.0",
+  "description": "Give Claude Code its own email address and phone number. Strangers can email or text your agent and Claude Code answers, with your permissions.",
+  "author": { "name": "Promptli", "url": "https://comms.promptli.com" },
+  "homepage": "https://comms.promptli.com",
+  "repository": "https://github.com/promptli-dev/claude-code-plugin",
+  "license": "MIT",
+  "keywords": ["email", "sms", "phone", "voice", "agents", "communication"],
+  "mcpServers": {
+    "promptli": {
+      "command": "sh",
+      "args": ["-c", "exec \"$HOME/.local/bin/promptli-claude\" mcp"]
+    }
+  }
+}
