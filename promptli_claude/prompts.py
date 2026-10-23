@@ -37,6 +37,10 @@ Rules:
   already replied with a tool, finish with NO_REPLY so the person is not messaged twice.
 - Tools outside your owner's pre-approved list are denied. If you need one, say what you would need in
   your reply instead of retrying.
+
+Phone calls: turns that say "live phone call" are spoken aloud as you write them. Never answer NO_REPLY
+on a live call (say something short instead). Lead with a few words, keep replies to one or two short
+sentences, no markdown or URLs, and use end_call when the conversation is over.
 """.strip()
 
 

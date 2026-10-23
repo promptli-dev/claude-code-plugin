@@ -75,6 +75,10 @@ class _Session:
     last_used: float = field(default_factory=time.monotonic)
     session_id: str | None = None
     busy: bool = False
+    # A turn stopped before its ResultMessage (barge-in / cancel): drain it before the next query, or the
+    # next turn would read the old result as its own.
+    pending_result: bool = False
+    model: str | None = None
 
 
 class ClaudeCodeAdapter:
@@ -91,8 +95,10 @@ class ClaudeCodeAdapter:
         idle_close_s: float = 900,
         max_sessions: int = 8,
         max_turns: int | None = 40,
+        voice_model: str | None = None,
     ) -> None:
         self.model = model
+        self.voice_model = voice_model  # e.g. "haiku" for snappier phone turns; None = same as `model`
         self.factory = client_factory or _default_factory
         self.idle_close_s = idle_close_s
         self.max_sessions = max_sessions
@@ -211,6 +217,11 @@ class ClaudeCodeAdapter:
         async with s.lock:
             s.busy = True
             try:
+                if s.pending_result:
+                    s = await self._drain(s)
+                await self._use_model(
+                    s, self.voice_model if kind is TurnKind.VOICE and self.voice_model else self.model
+                )
                 retry = False
                 async for chunk in self._stream(s, turn_preamble(kind) + prompt):
                     if isinstance(chunk, TurnError) and chunk.message == "_resume_failed" and resume_id:
@@ -228,20 +239,57 @@ class ClaudeCodeAdapter:
                 s.busy = False
                 s.last_used = time.monotonic()
 
+    async def _use_model(self, s: _Session, model: str | None) -> None:
+        if model == s.model:
+            return
+        set_model: Any = getattr(s.client, "set_model", None)
+        if callable(set_model):
+            with contextlib.suppress(Exception):
+                pending: Any = set_model(model)
+                await pending
+                s.model = model
+
+    async def _drain(self, s: _Session, timeout: float = 8.0) -> _Session:  # noqa: ASYNC109
+        """Consume the leftover result of an interrupted turn. If that hangs, reopen the session (resume)."""
+
+        async def consume() -> None:
+            async for msg in s.client.receive_response():
+                if isinstance(msg, ResultMessage):
+                    s.session_id = msg.session_id or s.session_id
+                    return
+
+        try:
+            await asyncio.wait_for(consume(), timeout=timeout)
+            s.pending_result = False
+            return s
+        except Exception:
+            log.warning("could not drain interrupted turn for %s; reopening the session", s.key)
+            resume = s.session_id
+            await self._close_session(s.key)
+            fresh = await self._open(s.key, resume)
+            fresh.busy = True
+            return fresh
+
     async def _stream(self, s: _Session, prompt: str) -> AsyncIterator[TurnChunk]:
         streamed = False
         last_text = ""
         produced = False
+        finished = False
         try:
             await s.client.query(prompt)
+            s.pending_result = True
             async for msg in s.client.receive_response():
                 if isinstance(msg, StreamEvent):
+                    if msg.parent_tool_use_id is not None:
+                        continue  # subagent output is not ours to speak or send
                     ev: dict[str, Any] = msg.event
                     delta: dict[str, Any] = ev.get("delta") or {}
                     if ev.get("type") == "content_block_delta" and delta.get("type") == "text_delta":
                         streamed = produced = True
                         yield TextDelta(str(delta.get("text", "")))
                 elif isinstance(msg, AssistantMessage):
+                    if msg.parent_tool_use_id is not None:
+                        continue
                     texts = [b.text for b in msg.content if isinstance(b, TextBlock)]
                     for b in msg.content:
                         if isinstance(b, ToolUseBlock):
@@ -254,6 +302,8 @@ class ClaudeCodeAdapter:
                             yield TextDelta(last_text)
                     streamed = False  # each assistant message starts a new streamed block
                 elif isinstance(msg, ResultMessage):
+                    finished = True
+                    s.pending_result = False
                     s.session_id = msg.session_id or s.session_id
                     if msg.is_error:
                         if not produced and s.session_id and msg.num_turns == 0:
@@ -269,4 +319,7 @@ class ClaudeCodeAdapter:
             await self._close_session(s.key)
             yield TurnError(f"claude: {e}", retryable=True)
             return
+        finally:
+            if not finished and s.pending_result:
+                log.debug("turn for %s stopped before its result; will drain", s.key)
         yield TurnError("claude: response ended without a result", retryable=True)

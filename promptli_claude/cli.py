@@ -259,7 +259,7 @@ def run(verbose: bool = typer.Option(False, "-v", "--verbose")) -> None:
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
     )
     logging.getLogger("httpx").setLevel(logging.WARNING)
-    adapter = ClaudeCodeAdapter(model=cfg.extra.get("model"))
+    adapter = ClaudeCodeAdapter(model=cfg.extra.get("model"), voice_model=cfg.extra.get("voice_model"))
 
     async def main_loop() -> None:
         gw = Gateway(cfg, adapter)
