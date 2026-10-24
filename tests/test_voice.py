@@ -157,3 +157,18 @@ async def test_claude_code_answers_a_call_through_the_gateway_driver() -> None:
     assert "live phone call" in clients[0].prompts[0]
     assert sessions["ctc_1"] == "sess-1"
     await a.close()
+
+
+async def test_warm_starts_one_session_that_the_greeting_reuses() -> None:
+    a, clients = await make(voice_model="haiku")
+    await asyncio.gather(
+        a.warm("ctc_1", None),
+        _collect(a.run_turn("ctc_1", "greet", kind=TurnKind.VOICE, resume_id=None)),
+    )
+    assert len(clients) == 1, "warm and the first turn share one Claude Code session"
+    assert clients[0].models[:1] == ["haiku"]
+    await a.close()
+
+
+async def _collect(gen: Any) -> list[Any]:
+    return [c async for c in gen]

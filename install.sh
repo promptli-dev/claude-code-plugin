@@ -15,7 +15,7 @@
 set -eu
 
 COMMS_SOURCE="${PROMPTLI_COMMS_SOURCE:-https://github.com/promptli-dev/promptli-comms}"
-COMMS_REF="${PROMPTLI_COMMS_REF:-c8cbdf5002aee605696ef8ac7908e1939e3114f2}"
+COMMS_REF="${PROMPTLI_COMMS_REF:-2fa21bf42971997f2c5ffd6bb1f8098d26703871}"
 PLUGIN_SOURCE="${PROMPTLI_CLAUDE_SOURCE:-git+https://github.com/promptli-dev/claude-code-plugin@main}"
 DATA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/promptli-claude"
 VENV="$DATA_DIR/venv"
