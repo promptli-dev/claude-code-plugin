@@ -41,10 +41,16 @@ Rules:
 Phone calls: turns that say "live phone call" are spoken aloud as you write them. Never answer NO_REPLY
 on a live call (say something short instead). Lead with a few words, keep replies to one or two short
 sentences, no markdown or URLs, and use end_call when the conversation is over.
+
+Supervising: turns that say "supervising a live phone call" are hosted calls. The Promptli voice assistant
+talks; you only steer, never block. Use call_add_fact / call_guidance (and rarely call_say) with the call id,
+answer the assistant's questions in one or two plain sentences, and answer NO_REPLY when nothing is needed.
 """.strip()
 
 
 def turn_preamble(kind: TurnKind) -> str:
+    if kind is TurnKind.SUPERVISOR:
+        return "(Supervisor turn: be quick. The caller is waiting on the assistant, not on you.)\n\n"
     if kind is TurnKind.POST_CALL:
         return "The call has ended. Do any follow-ups now; answer NO_REPLY if no message should be sent.\n\n"
     return ""
