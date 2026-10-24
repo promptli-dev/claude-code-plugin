@@ -235,9 +235,8 @@ class ClaudeCodeAdapter:
             try:
                 if s.pending_result:
                     s = await self._drain(s)
-                await self._use_model(
-                    s, self.voice_model if kind is TurnKind.VOICE and self.voice_model else self.model
-                )
+                fast = kind in (TurnKind.VOICE, TurnKind.SUPERVISOR) and self.voice_model
+                await self._use_model(s, self.voice_model if fast else self.model)
                 retry = False
                 async for chunk in self._stream(s, turn_preamble(kind) + prompt):
                     if isinstance(chunk, TurnError) and chunk.message == "_resume_failed" and resume_id:
