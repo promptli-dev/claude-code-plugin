@@ -107,6 +107,7 @@ class ClaudeCodeAdapter:
         self.tools: list[ToolSpec] = []
         self._server: McpSdkServerConfig | None = None
         self._sessions: dict[str, _Session] = {}
+        self._opening: dict[str, asyncio.Lock] = {}  # one session per person, even if warm + turn race
         self._reaper: asyncio.Task[None] | None = None
 
     # ---- lifecycle ----------------------------------------------------------------------------
@@ -167,13 +168,28 @@ class ClaudeCodeAdapter:
         s = self._sessions.get(session_key)
         if s is not None:
             return s
+        lock = self._opening.setdefault(session_key, asyncio.Lock())
+        async with lock:
+            s = self._sessions.get(session_key)
+            if s is not None:
+                return s
+            try:
+                return await self._open(session_key, resume_id)
+            except Exception:
+                if not resume_id:
+                    raise
+                log.warning("could not resume %s for %s; starting fresh", resume_id, session_key)
+                return await self._open(session_key, None)
+
+    async def warm(self, session_key: str, resume_id: str | None) -> None:
+        """A call is ringing: start this person's Claude Code session now (no cold-start greeting)."""
         try:
-            return await self._open(session_key, resume_id)
+            s = await self._session(session_key, resume_id)
+            if self.voice_model:
+                async with s.lock:
+                    await self._use_model(s, self.voice_model)
         except Exception:
-            if not resume_id:
-                raise
-            log.warning("could not resume %s for %s; starting fresh", resume_id, session_key)
-            return await self._open(session_key, None)
+            log.warning("could not pre-start Claude Code for %s", session_key, exc_info=True)
 
     async def _close_session(self, key: str) -> None:
         s = self._sessions.pop(key, None)

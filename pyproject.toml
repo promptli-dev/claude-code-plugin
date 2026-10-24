@@ -24,8 +24,8 @@ packages = ["promptli_claude"]
 
 # Until promptli / promptli-gateway are on PyPI, both come from the promptli-comms repo at a pinned commit.
 [tool.uv.sources]
-promptli = { git = "https://github.com/promptli-dev/promptli-comms", subdirectory = "sdk/python", rev = "c8cbdf5002aee605696ef8ac7908e1939e3114f2" }
-promptli-gateway = { git = "https://github.com/promptli-dev/promptli-comms", subdirectory = "gateway", rev = "c8cbdf5002aee605696ef8ac7908e1939e3114f2" }
+promptli = { git = "https://github.com/promptli-dev/promptli-comms", subdirectory = "sdk/python", rev = "2fa21bf42971997f2c5ffd6bb1f8098d26703871" }
+promptli-gateway = { git = "https://github.com/promptli-dev/promptli-comms", subdirectory = "gateway", rev = "2fa21bf42971997f2c5ffd6bb1f8098d26703871" }
 
 [dependency-groups]
 dev = ["pyright>=1.1.414", "pytest>=9.1", "pytest-asyncio>=1.4", "ruff>=0.17"]
