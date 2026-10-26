@@ -15,7 +15,7 @@
 set -eu
 
 COMMS_SOURCE="${PROMPTLI_COMMS_SOURCE:-https://github.com/promptli-dev/promptli-comms}"
-COMMS_REF="${PROMPTLI_COMMS_REF:-c74a8b89600f3f0f356a14aea8558510c38afbde}"
+COMMS_REF="${PROMPTLI_COMMS_REF:-bcd3630f8f33e1e2d7a2ddd0b764ac4801dafb86}"
 PLUGIN_SOURCE="${PROMPTLI_CLAUDE_SOURCE:-git+https://github.com/promptli-dev/claude-code-plugin@main}"
 DATA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/promptli-claude"
 VENV="$DATA_DIR/venv"
@@ -27,7 +27,7 @@ die() { printf '\033[1;31merror:\033[0m %s\n' "$*" >&2; exit 1; }
 
 case "$(uname -s)" in
   Darwin) ;;
-  Linux) warn "Linux works, but the background service (autostart) is macOS-only for now." ;;
+  Linux) ;;
   *) die "unsupported OS: $(uname -s)" ;;
 esac
 
