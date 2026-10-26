@@ -504,7 +504,7 @@ wheels = [
 [[package]]
 name = "promptli"
 version = "0.1.0"
-source = { git = "https://github.com/promptli-dev/promptli-comms?subdirectory=sdk%2Fpython&rev=c74a8b89600f3f0f356a14aea8558510c38afbde#c74a8b89600f3f0f356a14aea8558510c38afbde" }
+source = { git = "https://github.com/promptli-dev/promptli-comms?subdirectory=sdk%2Fpython&rev=bcd3630f8f33e1e2d7a2ddd0b764ac4801dafb86#bcd3630f8f33e1e2d7a2ddd0b764ac4801dafb86" }
 dependencies = [
     { name = "httpx" },
     { name = "pydantic", extra = ["email"] },
@@ -539,8 +539,8 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "claude-agent-sdk", specifier = ">=0.2.173" },
-    { name = "promptli", extras = ["cli"], git = "https://github.com/promptli-dev/promptli-comms?subdirectory=sdk%2Fpython&rev=c74a8b89600f3f0f356a14aea8558510c38afbde" },
-    { name = "promptli-gateway", git = "https://github.com/promptli-dev/promptli-comms?subdirectory=gateway&rev=c74a8b89600f3f0f356a14aea8558510c38afbde" },
+    { name = "promptli", extras = ["cli"], git = "https://github.com/promptli-dev/promptli-comms?subdirectory=sdk%2Fpython&rev=bcd3630f8f33e1e2d7a2ddd0b764ac4801dafb86" },
+    { name = "promptli-gateway", git = "https://github.com/promptli-dev/promptli-comms?subdirectory=gateway&rev=bcd3630f8f33e1e2d7a2ddd0b764ac4801dafb86" },
     { name = "typer", specifier = ">=0.15" },
 ]
 
@@ -555,7 +555,7 @@ dev = [
 [[package]]
 name = "promptli-gateway"
 version = "0.1.0"
-source = { git = "https://github.com/promptli-dev/promptli-comms?subdirectory=gateway&rev=c74a8b89600f3f0f356a14aea8558510c38afbde#c74a8b89600f3f0f356a14aea8558510c38afbde" }
+source = { git = "https://github.com/promptli-dev/promptli-comms?subdirectory=gateway&rev=bcd3630f8f33e1e2d7a2ddd0b764ac4801dafb86#bcd3630f8f33e1e2d7a2ddd0b764ac4801dafb86" }
 dependencies = [
     { name = "mcp" },
     { name = "promptli" },
