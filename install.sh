@@ -9,13 +9,13 @@
 #
 # Environment overrides:
 #   PROMPTLI_CLAUDE_SOURCE  pip requirement or local path for the plugin  (default: GitHub main)
-#   PROMPTLI_COMMS_SOURCE   git URL of the SDK/gateway repo              (default: GitHub)
-#   PROMPTLI_COMMS_REF      git ref for the SDK/gateway                  (default: pinned commit)
+#   PROMPTLI_COMMS_REF      install the SDK/gateway from this git ref instead of PyPI (development)
+#   PROMPTLI_COMMS_SOURCE   git URL used with PROMPTLI_COMMS_REF          (default: GitHub)
 #   PROMPTLI_SKIP_PLUGIN=1  do not register the Claude Code plugin
 set -eu
 
 COMMS_SOURCE="${PROMPTLI_COMMS_SOURCE:-https://github.com/promptli-dev/promptli-comms}"
-COMMS_REF="${PROMPTLI_COMMS_REF:-bcd3630f8f33e1e2d7a2ddd0b764ac4801dafb86}"
+COMMS_REF="${PROMPTLI_COMMS_REF:-}"
 PLUGIN_SOURCE="${PROMPTLI_CLAUDE_SOURCE:-git+https://github.com/promptli-dev/claude-code-plugin@main}"
 DATA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/promptli-claude"
 VENV="$DATA_DIR/venv"
@@ -47,10 +47,13 @@ mkdir -p "$DATA_DIR" "$BIN_DIR"
 uv venv --quiet --allow-existing --python ">=3.11" "$VENV"
 
 say "Installing promptli-claude"
-uv pip install --quiet --no-sources --python "$VENV/bin/python" \
-  "promptli[cli] @ git+$COMMS_SOURCE@$COMMS_REF#subdirectory=sdk/python" \
-  "promptli-gateway @ git+$COMMS_SOURCE@$COMMS_REF#subdirectory=gateway" \
-  "$PLUGIN_SOURCE"
+if [ -n "$COMMS_REF" ]; then  # development: SDK + gateway from a git ref
+  set -- "promptli[cli] @ git+$COMMS_SOURCE@$COMMS_REF#subdirectory=sdk/python" \
+    "promptli-gateway @ git+$COMMS_SOURCE@$COMMS_REF#subdirectory=gateway"
+else  # released packages from PyPI
+  set -- "promptli[cli]>=0.1.0,<0.2" "promptli-gateway>=0.1.0,<0.2"
+fi
+uv pip install --quiet --no-sources --python "$VENV/bin/python" "$@" "$PLUGIN_SOURCE"
 
 ln -sf "$VENV/bin/promptli-claude" "$BIN_DIR/promptli-claude"
 "$BIN_DIR/promptli-claude" version >/dev/null || die "install failed: promptli-claude does not run"
