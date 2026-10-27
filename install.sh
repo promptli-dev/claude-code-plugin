@@ -51,7 +51,7 @@ if [ -n "$COMMS_REF" ]; then  # development: SDK + gateway from a git ref
   set -- "promptli[cli] @ git+$COMMS_SOURCE@$COMMS_REF#subdirectory=sdk/python" \
     "promptli-gateway @ git+$COMMS_SOURCE@$COMMS_REF#subdirectory=gateway"
 else  # released packages from PyPI
-  set -- "promptli[cli]>=0.1.0,<0.2" "promptli-gateway>=0.1.0,<0.2"
+  set -- "promptli[cli]>=0.2.0,<0.3" "promptli-gateway>=0.2.0,<0.3"
 fi
 uv pip install --quiet --no-sources --python "$VENV/bin/python" "$@" "$PLUGIN_SOURCE"
 

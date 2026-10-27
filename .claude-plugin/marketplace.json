@@ -7,7 +7,7 @@
       "name": "promptli-comms",
       "source": "./",
       "description": "Email, SMS and phone calls for Claude Code, powered by Promptli Comms.",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "category": "productivity"
     }
   ]

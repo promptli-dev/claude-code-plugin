@@ -1,13 +1,13 @@
 [project]
 name = "promptli-claude"
-version = "0.1.0"
+version = "0.2.0"
 description = "Give Claude Code its own email address and phone number with Promptli Comms"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
 dependencies = [
-    "promptli[cli]>=0.1.0,<0.2",
-    "promptli-gateway>=0.1.0,<0.2",
+    "promptli[cli]>=0.2.0,<0.3",
+    "promptli-gateway>=0.2.0,<0.3",
     "claude-agent-sdk>=0.2.173",
     "typer>=0.15",
 ]

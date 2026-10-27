@@ -9,6 +9,7 @@ import logging
 import os
 import shutil
 import signal
+import socket
 import subprocess
 import sys
 from pathlib import Path
@@ -16,7 +17,7 @@ from typing import Any
 
 import claude_agent_sdk
 import typer
-from promptli import AsyncPromptli, PromptliError
+from promptli import AsyncPromptli, OAuthCredential, OAuthToken, PromptliError, browser_login
 from promptli_gateway.config import DEFAULT_BASE_URL, GatewayConfig, home_dir
 from promptli_gateway.core import Gateway
 from promptli_gateway.setup.autostart import (
@@ -106,18 +107,33 @@ def setup(
     base_url: str | None = typer.Option(None, help="Promptli API base URL"),
     start: bool = typer.Option(True, help="Start the background service when done"),
     yes: bool = typer.Option(False, "--yes", "-y", help="Accept the security warning"),
+    api_key: bool = typer.Option(False, "--api-key", help="Paste an API key instead of logging in"),
+    no_browser: bool = typer.Option(
+        False, "--no-browser", help="Print the login link and paste the code (SSH, headless)"
+    ),
+    test: bool = typer.Option(False, "--test", help="Start in Test mode (simulated, nothing is sent)"),
 ) -> None:
-    """Interactive setup: connect a key (or sign up), create the agent and start the service."""
+    """Interactive setup: log in with your browser (or use a key, or sign up) and start the service."""
     typer.secho("Promptli Comms for Claude Code", bold=True)
     typer.secho("\nBefore you continue:", fg="yellow", bold=True)
     typer.echo(STRANGER_WARNING)
     if not yes and not typer.confirm("\nI understand. Continue?", default=False):
         raise typer.Exit(1)
     url = _base_url(base_url)
+    proj = str(Path(project_dir or os.getcwd()).resolve())
     key = os.environ.get("PROMPTLI_API_KEY")
     if not key:
-        has_key = typer.confirm("\nDo you have a Promptli API key?", default=True)
-        if has_key:
+        how = "2" if api_key else "1" if no_browser else _ask_how()
+        if how == "1":
+            cred = _browser_login(url, identity=identity, number=number, test=test, no_browser=no_browser)
+            res = asyncio.run(bootstrap(runtime=RUNTIME, credential=cred, project_dir=proj))
+            _show_bootstrap(res, as_json=False)
+            if res.status == "error":
+                raise typer.Exit(1)
+            if start:
+                _start()
+            return
+        if how == "2":
             key = typer.prompt("Paste the key (input hidden)", hide_input=True).strip()
         else:
             human = typer.prompt("Your email (we send you a confirmation code)")
@@ -159,6 +175,67 @@ def setup(
         _start()
 
 
+def _ask_how() -> str:
+    typer.echo("\nHow do you want to connect?")
+    typer.echo("  1) Log in with your browser (recommended): pick or create an agent, nothing to paste")
+    typer.echo("  2) Paste an API key")
+    typer.echo("  3) Sign up with email (no Promptli account yet)")
+    while (how := str(typer.prompt("Choose 1, 2 or 3", default="1")).strip()) not in ("1", "2", "3"):
+        typer.echo("Please type 1, 2 or 3.")
+    return how
+
+
+def _browser_login(
+    url: str, *, identity: str | None, number: bool, test: bool, no_browser: bool
+) -> OAuthCredential:
+    def show(link: str) -> None:
+        if no_browser:
+            typer.echo(f"\nOpen this link on any device and approve:\n  {link}")
+        else:
+            typer.echo(f"\nOpening your browser to log in. If it doesn't open, use:\n  {link}")
+
+    async def paste() -> str:
+        return await asyncio.to_thread(typer.prompt, "Paste the code shown after you approve")
+
+    host = socket.gethostname().split(".")[0]
+    try:
+        return asyncio.run(
+            browser_login(
+                url,
+                client_name=f"Claude Code on {host}",
+                open_browser=not no_browser,
+                login_hint=identity,
+                want_number=number,
+                env="test" if test else None,
+                on_url=show,
+                paste_code=paste if no_browser else None,
+            )
+        )
+    except PromptliError as e:
+        typer.secho(f"Login failed: {e.message} ({e.code})", fg="red", err=True)
+        raise typer.Exit(1) from e
+
+
+@app.command()
+def logout(yes: bool = typer.Option(False, "--yes", "-y")) -> None:
+    """Revoke this machine's browser login (or forget the API key) and stop the service. The agent is kept."""
+    cfg = GatewayConfig.load(RUNTIME)
+    if cfg is None or not cfg.credentials_path.exists():
+        typer.echo("Not logged in.")
+        return
+    if not yes and not typer.confirm(f"Log out @{cfg.identity} on this machine?", default=True):
+        raise typer.Exit(1)
+    uninstall_autostart(RUNTIME)
+    src = None
+    with contextlib.suppress(Exception):
+        src = cfg.auth()
+    if isinstance(src, OAuthToken):
+        asyncio.run(src.revoke())
+    cfg.credentials_path.unlink(missing_ok=True)
+    typer.echo("Logged out" + (" and revoked the browser login." if isinstance(src, OAuthToken) else "."))
+    typer.echo("Run `promptli-claude setup` to connect again.")
+
+
 @app.command("bootstrap")
 def bootstrap_cmd(
     identity: str | None = typer.Option(None, help="Agent handle (required for organization keys)"),
@@ -176,6 +253,17 @@ def bootstrap_cmd(
         if cfg is None:
             typer.secho("Set PROMPTLI_API_KEY (or use --api-key-stdin).", fg="red", err=True)
             raise typer.Exit(2)
+        src = cfg.auth()
+        if isinstance(src, OAuthToken):
+            res = asyncio.run(
+                bootstrap(
+                    runtime=RUNTIME,
+                    credential=src.cred,
+                    project_dir=str(Path(project_dir).resolve()) if project_dir else None,
+                )
+            )
+            _show_bootstrap(res, as_json)
+            return
         key = cfg.api_key()
     res = asyncio.run(
         bootstrap(
@@ -225,7 +313,7 @@ def verify(code: str = typer.Argument(..., help="The 6-digit code emailed to the
     cfg = _require_config()
 
     async def go() -> bool:
-        async with AsyncPromptli(cfg.api_key(), base_url=cfg.base_url) as p:
+        async with AsyncPromptli(cfg.auth(), base_url=cfg.base_url) as p:
             return await p.signup.verify(code)
 
     try:
@@ -313,7 +401,7 @@ def status(as_json: bool = typer.Option(False, "--json")) -> None:
         with contextlib.suppress(Exception):
 
             async def channels() -> dict[str, Any]:
-                async with AsyncPromptli(cfg.api_key(), base_url=cfg.base_url) as p:
+                async with AsyncPromptli(cfg.auth(), base_url=cfg.base_url) as p:
                     st = await p.identity(cfg.identity).channel_status()
                     return {"email": st.email.address, "sms": st.sms.number, "sms_status": st.sms.status}
 
