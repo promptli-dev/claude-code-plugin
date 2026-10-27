@@ -10,9 +10,10 @@ Help the user set up Promptli Comms for Claude Code.
    `curl -fsSL https://comms.promptli.com/install/claude.sh | sh`
 2. Run `promptli-claude status --json`. If it is already configured, show the agent, address, number and
    service state, and offer `promptli-claude doctor`.
-3. If it is not configured, ask the user to run `promptli-claude setup` in their own terminal (it asks
-   for the API key with hidden input, and shows a security warning they must accept). Never ask for the
-   API key in chat and never put it on a command line.
+3. If it is not configured, ask the user to run `promptli-claude setup` in their own terminal. It shows a
+   security warning they must accept, then opens their browser to log in and pick or create the agent
+   (`--number` also offers a phone number). Never ask for an API key or a login code in chat and never
+   put one on a command line.
 4. Afterwards run `promptli-claude doctor` and explain any failing check.
 
 $ARGUMENTS

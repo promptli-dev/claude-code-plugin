@@ -503,7 +503,7 @@ wheels = [
 
 [[package]]
 name = "promptli"
-version = "0.1.0"
+version = "0.2.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx" },
@@ -512,14 +512,14 @@ dependencies = [
     { name = "typer" },
     { name = "websockets" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/eb/90/089b2578eb557304428b967cc377ab8302cfcc78d0c643289667050fd020/promptli-0.1.0.tar.gz", hash = "sha256:0b48a37ae40da79cb7116508aa5899f699c22b806b864b36adc2d256800f5067", size = 36716, upload-time = "2026-10-27T04:55:19.378Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/4c/ab/87c508a3a18b298adda0ceddc5b19ac49a1ab4969630eeb3568c7df1ce68/promptli-0.2.0.tar.gz", hash = "sha256:59ce5c3c3b49f087420bf7529c5a994b38944210633e8c191a701cc13d3f464e", size = 46182, upload-time = "2026-10-27T17:42:45.546Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d3/50/b3027c6d902edc8a1924c80b059ee4e9a99161b57da1dafb890cd0ee5160/promptli-0.1.0-py3-none-any.whl", hash = "sha256:d4c7cb531f2fa725c91ff265c772226fdc4e63187e5788af9888c7a6d84f0af7", size = 39796, upload-time = "2026-10-27T04:55:17.955Z" },
+    { url = "https://files.pythonhosted.org/packages/d6/5b/20889c28e5c388c94480c48db7bb2ec6bf8ef94bf56be21cf74e28485983/promptli-0.2.0-py3-none-any.whl", hash = "sha256:d48cbb94d2e0ed26b2f86f7ffef69c1937b75f9cff9738f50b4cb08b0c992757", size = 47072, upload-time = "2026-10-27T17:42:44.336Z" },
 ]
 
 [[package]]
 name = "promptli-claude"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "." }
 dependencies = [
     { name = "claude-agent-sdk" },
@@ -539,8 +539,8 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "claude-agent-sdk", specifier = ">=0.2.173" },
-    { name = "promptli", extras = ["cli"], specifier = ">=0.1.0,<0.2" },
-    { name = "promptli-gateway", specifier = ">=0.1.0,<0.2" },
+    { name = "promptli", extras = ["cli"], specifier = ">=0.2.0,<0.3" },
+    { name = "promptli-gateway", specifier = ">=0.2.0,<0.3" },
     { name = "typer", specifier = ">=0.15" },
 ]
 
@@ -554,16 +554,16 @@ dev = [
 
 [[package]]
 name = "promptli-gateway"
-version = "0.1.0"
+version = "0.2.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx" },
     { name = "mcp" },
     { name = "promptli" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/52/d7/7c0cb5daa420b102c30c373bae063ae859ccbe9e86fb801ca6368e4b28aa/promptli_gateway-0.1.0.tar.gz", hash = "sha256:d9704a347c6015ef2d4028c98828829d76809baf42244c880dee31ca8a07cd98", size = 30456, upload-time = "2026-10-27T04:55:47.708Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/70/38/31bd40589cef98c32f179829f7944668ef33414873e2ec191bc34a40b572/promptli_gateway-0.2.0.tar.gz", hash = "sha256:3b75e4a24d8c51e69536e8f081df384451828072ad16ded59542c73df5d7e126", size = 32415, upload-time = "2026-10-27T17:43:08.15Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ea/fc/7584a24d66e31e6a562e32ed70e823fb20c610d5764cbe4ac30eedb5254c/promptli_gateway-0.1.0-py3-none-any.whl", hash = "sha256:ab586b9e12fbaf9715deb443aee18fc8c2aeb62e69f34a1aaa7024018bf09e99", size = 33578, upload-time = "2026-10-27T04:55:46.294Z" },
+    { url = "https://files.pythonhosted.org/packages/fe/33/148938a78c1db57d20fd0e3115b6d56c06782ce3c4370165a2b0ede76196/promptli_gateway-0.2.0-py3-none-any.whl", hash = "sha256:e8c83208dbc862712eea1dc02769a8bddfb076920cf3bece54b2026d1f316423", size = 34498, upload-time = "2026-10-27T17:43:06.643Z" },
 ]
 
 [[package]]

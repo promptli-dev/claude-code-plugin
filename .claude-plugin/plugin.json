@@ -1,6 +1,6 @@
 {
   "name": "promptli-comms",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Give Claude Code its own email address and phone number. Strangers can email or text your agent and Claude Code answers, with your permissions.",
   "author": { "name": "Promptli", "url": "https://comms.promptli.com" },
   "homepage": "https://comms.promptli.com",

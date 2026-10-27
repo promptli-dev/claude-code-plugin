@@ -28,10 +28,13 @@ curl -fsSL https://comms.promptli.com/install/claude.sh | sh
 promptli-claude setup
 ```
 
-`setup` shows the security warning, asks for your Promptli API key (hidden input) or signs you up,
-creates the agent, and starts the background service (launchd, starts at login). An organization key
-is only used once to mint an identity-scoped key; only that scoped key is stored
-(`~/.promptli/promptli-claude/credentials`, mode 600).
+`setup` shows the security warning, then **logs you in with your browser**. There you pick an existing
+agent or create one (add `--number` to get it a phone number); nothing is copied or pasted. Use
+`--no-browser` over SSH, or `--api-key` to paste a key instead (an organization key is only used once to
+mint an identity-scoped key). Then it starts the background service (launchd, starts at login). The
+login refreshes itself and shows up under **API keys → Connected apps**, where you can revoke it.
+`promptli-claude logout` revokes it from this machine. Credentials live in
+`~/.promptli/promptli-claude/credentials` (mode 600).
 
 The installer also adds this repo as a Claude Code plugin marketplace and installs the plugin, which
 gives interactive Claude Code sessions the Promptli tools (`mcp__promptli__*`), a skill, and the
@@ -46,8 +49,9 @@ gives interactive Claude Code sessions the Promptli tools (`mcp__promptli__*`), 
 
 | Command | What it does |
 | --- | --- |
-| `promptli-claude setup` | Interactive setup (key or signup, project directory, phone number with `--number`) |
-| `promptli-claude bootstrap --identity <handle> --json` | Non-interactive and idempotent; key from `PROMPTLI_API_KEY` |
+| `promptli-claude setup` | Interactive setup (browser login, key or signup; project directory; phone number with `--number`) |
+| `promptli-claude logout` | Revoke this machine's login and stop the service (the agent is kept) |
+| `promptli-claude bootstrap --identity <handle> --json` | Non-interactive and idempotent; uses the stored login, or a key from `PROMPTLI_API_KEY` |
 | `promptli-claude signup --email you@x.com --handle my-agent` | Self-signup without a key |
 | `promptli-claude verify <code>` | Confirm a self-signup with the emailed code |
 | `promptli-claude start / stop / restart` | Manage the background service |
