@@ -1,13 +1,18 @@
 {
   "name": "promptli",
-  "owner": { "name": "Promptli", "url": "https://comms.promptli.com" },
-  "metadata": { "description": "Promptli Comms plugins for Claude Code" },
+  "owner": {
+    "name": "Promptli",
+    "url": "https://comms.promptli.com"
+  },
+  "metadata": {
+    "description": "Promptli Comms plugins for Claude Code"
+  },
   "plugins": [
     {
       "name": "promptli-comms",
       "source": "./",
-      "description": "Email, SMS and phone calls for Claude Code, powered by Promptli Comms.",
-      "version": "0.2.0",
+      "description": "Email, SMS and phone calls for Claude, powered by the hosted Promptli Comms MCP server.",
+      "version": "0.3.0",
       "category": "productivity"
     }
   ]
