@@ -1,18 +1,74 @@
 # Promptli Comms for Claude Code
 
-Give Claude Code its own email address and phone number. People email or text your agent, and Claude
-Code answers in your project with your permissions. It can also send email and texts itself.
+Give Claude its own email address and phone number. With this plugin, Claude can send and read email,
+send texts, place and schedule phone calls, and remember the people it talks to, as your
+[Promptli Comms](https://comms.promptli.com) agent.
+
+The plugin has two parts:
+
+1. **The plugin itself** (this is all you need to send and read): a connection to the hosted Promptli
+   Comms MCP server at `https://api.comms.promptli.com/mcp`, a skill that teaches Claude how to use it,
+   and the `/promptli-comms:setup`, `/promptli-comms:status` and `/promptli-comms:doctor` commands.
+   It installs and runs nothing on your machine.
+2. **An optional background service**, `promptli-claude`, that lets Claude Code *answer* people who
+   email or text your agent while you are away. You install it yourself with a separate installer;
+   see [Optional: answer inbound email and texts](#optional-answer-inbound-email-and-texts).
+
+## Install
+
+From the Claude Code plugin directory, or from this repository's marketplace:
+
+```
+/plugin marketplace add promptli-dev/claude-code-plugin
+/plugin install promptli-comms@promptli
+```
+
+Then run `/mcp`, select `promptli` and choose **Authenticate**. Your browser opens the Promptli Comms
+sign-in (OAuth 2.1 with PKCE). Create an account or log in, then pick or create the agent that Claude
+acts as. Nothing is copied or pasted, and no API key is stored in Claude Code's settings. The
+connection shows up in the Promptli console under **API keys → Connected apps**, where you can revoke it.
+
+Run `/promptli-comms:setup` to check the connection.
+
+## What Claude can do
+
+| Tool | What it does |
+| --- | --- |
+| `whoami` | The agent, organization and environment (live or test) this connection acts as |
+| `list_emails`, `send_email`, `reply_email` | Email from the agent's own address, keeping threads |
+| `send_text` | SMS from the agent's phone number |
+| `place_call`, `schedule_call`, `schedule_text`, `list_scheduled`, `cancel_scheduled` | Phone calls (the Promptli voice assistant can talk for you) and scheduled calls and texts |
+| `get_call`, `get_call_transcript` | A call's outcome, summary and transcript |
+| `list_conversations`, `get_conversation` | The history with a person across email, texts and calls |
+| `lookup_contact`, `add_contact_memory` | Who someone is, and notes to remember about them |
+| `get_usage` | Call minutes used this month |
+
+A phone number, calls and higher sending limits depend on your Promptli Comms plan; see
+[comms.promptli.com](https://comms.promptli.com).
+
+## Data and privacy
+
+- Every tool call goes to Promptli Comms at `api.comms.promptli.com`, over HTTPS, with the OAuth token
+  you granted. Emails, texts, call transcripts and contact notes are stored by Promptli Comms so the
+  agent can read its history; you can see them in the console.
+- Messages you send leave through Promptli's email, SMS and voice providers to the recipients you name.
+- The plugin has no hooks and sends nothing anywhere else.
+- Anything people send to your agent is untrusted. The skill tells Claude to treat it as data, not
+  instructions, and to confirm before contacting someone you haven't named.
+
+## Optional: answer inbound email and texts
 
 ```
 person ──email/SMS──▶ Promptli Comms ──Agent Link (WebSocket)──▶ promptli-claude ──▶ Claude Code session
                                                                 (on your Mac)       (one per person)
 ```
 
-- **No tunnels or webhooks.** The background service keeps an outbound WebSocket to Promptli and
-  resumes from where it left off, so nothing is lost while your Mac sleeps.
+The `promptli-claude` service keeps an outbound WebSocket to Promptli and starts one Claude Code session
+per person who writes to your agent:
+
+- **No tunnels or webhooks.** It resumes from where it left off, so nothing is lost while your Mac sleeps.
 - **One Claude Code session per person.** The same person by email and then by text lands in the same
   conversation. Sessions survive restarts (Claude session ids are persisted).
-- **Streaming.** Replies are streamed from Claude as they are written (needed for phone calls, coming next).
 - **Your permissions.** Sessions load your Claude Code settings (`~/.claude/settings.json`, project and
   local settings). Tools you pre-approved in `permissions.allow` can run; anything else is denied
   automatically, because nobody is at the keyboard to approve it. Promptli's own tools are always allowed.
@@ -21,31 +77,32 @@ person ──email/SMS──▶ Promptli Comms ──Agent Link (WebSocket)─�
 > isolated session, and inbound content is marked as untrusted, but Claude can still be talked into
 > using any tool you allow. Keep `permissions.allow` tight for the project you point it at.
 
-## Install (macOS)
+### Install the service (macOS; Linux for development)
+
+Read [`install.sh`](install.sh) first if you like; it is short. Then:
 
 ```bash
 curl -fsSL https://comms.promptli.com/install/claude.sh | sh
 promptli-claude setup
 ```
 
-`setup` shows the security warning, then **logs you in with your browser**. There you pick an existing
-agent or create one (add `--number` to get it a phone number); nothing is copied or pasted. Use
+The installer:
+- installs [uv](https://docs.astral.sh/uv/) from astral.sh if it is missing;
+- creates a virtualenv at `~/.local/share/promptli-claude/venv` and installs `promptli-claude` from this
+  repository with `promptli` and `promptli-gateway` from PyPI, and links it to `~/.local/bin`;
+- adds this repository as a Claude Code marketplace and installs this plugin (`PROMPTLI_SKIP_PLUGIN=1`
+  skips that).
+
+It never asks for or stores a key. `setup` shows the security warning, then **logs you in with your
+browser**. There you pick an existing agent or create one (add `--number` to get it a phone number). Use
 `--no-browser` over SSH, or `--api-key` to paste a key instead (an organization key is only used once to
 mint an identity-scoped key). Then it starts the background service (launchd, starts at login). The
 login refreshes itself and shows up under **API keys → Connected apps**, where you can revoke it.
 `promptli-claude logout` revokes it from this machine. Credentials live in
-`~/.promptli/promptli-claude/credentials` (mode 600).
+`~/.promptli/promptli-claude/credentials` (mode 600). `promptli-claude uninstall --purge` removes the
+service and its local state.
 
-The installer also adds this repo as a Claude Code plugin marketplace and installs the plugin, which
-gives interactive Claude Code sessions the Promptli tools (`mcp__promptli__*`), a skill, and the
-`/promptli-comms:setup`, `/promptli-comms:status` and `/promptli-comms:doctor` commands. To add it by hand:
-
-```
-/plugin marketplace add promptli-dev/claude-code-plugin
-/plugin install promptli-comms@promptli
-```
-
-## Commands
+### Service commands
 
 | Command | What it does |
 | --- | --- |
@@ -61,12 +118,12 @@ gives interactive Claude Code sessions the Promptli tools (`mcp__promptli__*`), 
 | `promptli-claude run -v` | Run in the foreground (debugging) |
 | `promptli-claude uninstall [--purge]` | Stop the service; `--purge` deletes local config and state |
 
-How replies work:
+How the service replies:
 - Claude's final answer is sent back on the channel the person used (a threaded email reply, or SMS
   without markdown).
 - If Claude already replied with a tool, or answers `NO_REPLY`, nothing extra is sent.
 
-## Configuration
+### Service configuration
 
 `~/.promptli/promptli-claude/config.json` (written by setup):
 - `project_dir`: where Claude Code runs. Your `CLAUDE.md` and project settings apply there.
