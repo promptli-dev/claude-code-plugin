@@ -10,9 +10,9 @@
   "plugins": [
     {
       "name": "promptli-comms",
-      "source": "./",
+      "source": "./plugin",
       "description": "Email, SMS and phone calls for Claude, powered by the hosted Promptli Comms MCP server.",
-      "version": "0.3.1",
+      "version": "0.3.2",
       "category": "productivity"
     }
   ]

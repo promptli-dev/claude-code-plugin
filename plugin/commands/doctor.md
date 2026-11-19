@@ -1,6 +1,5 @@
 ---
 description: Diagnose Promptli Comms (MCP sign-in, and the optional background service's key, channels, Agent Link, clock and Claude login)
-allowed-tools: Bash(promptli-claude:*), Bash(~/.local/bin/promptli-claude:*)
 ---
 
 1. Call the `whoami` tool from the `promptli` MCP server. If it fails, explain the fix (usually: run

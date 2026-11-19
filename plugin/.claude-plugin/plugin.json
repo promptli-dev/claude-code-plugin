@@ -1,17 +1,28 @@
 {
   "name": "promptli-comms",
   "displayName": "Promptli Comms",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Give Claude its own email address and phone number: send and read email, text, place and schedule calls, and remember contacts through the hosted Promptli Comms MCP server (OAuth sign-in).",
-  "author": { "name": "Promptli", "url": "https://comms.promptli.com" },
-  "homepage": "https://comms.promptli.com",
+  "author": {
+    "name": "Promptli",
+    "url": "https://comms.promptli.com"
+  },
+  "homepage": "https://promptli.com/comms",
   "repository": "https://github.com/promptli-dev/claude-code-plugin",
   "license": "MIT",
-  "keywords": ["email", "sms", "phone", "voice", "agents", "communication"],
+  "keywords": [
+    "email",
+    "sms",
+    "phone",
+    "voice",
+    "agents",
+    "communication"
+  ],
   "mcpServers": {
     "promptli": {
       "type": "http",
       "url": "https://api.comms.promptli.com/mcp"
     }
-  }
+  },
+  "privacyPolicyUrl": "https://promptli.com/privacy"
 }
