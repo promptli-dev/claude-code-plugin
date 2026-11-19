@@ -12,7 +12,7 @@
       "name": "promptli-comms",
       "source": "./",
       "description": "Email, SMS and phone calls for Claude, powered by the hosted Promptli Comms MCP server.",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "category": "productivity"
     }
   ]

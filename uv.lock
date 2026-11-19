@@ -1,10 +1,10 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = ">=3.11"
 resolution-markers = [
     "python_full_version >= '3.14'",
     "python_full_version >= '3.12' and python_full_version < '3.14' and sys_platform == 'emscripten'",
-    "(python_full_version < '3.14' and sys_platform != 'emscripten') or (python_full_version < '3.12' and sys_platform == 'emscripten')",
+    "python_full_version < '3.12' or (python_full_version >= '3.12' and python_full_version < '3.14' and sys_platform != 'emscripten')",
 ]
 
 [[package]]
@@ -309,8 +309,8 @@ name = "httpcore2"
 version = "2.16.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "h11", marker = "python_full_version < '3.12' or python_full_version >= '3.14' or sys_platform != 'emscripten'" },
-    { name = "truststore", marker = "python_full_version < '3.12' or python_full_version >= '3.14' or sys_platform != 'emscripten'" },
+    { name = "h11" },
+    { name = "truststore" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/c0/61/afa9d6b7452f9eca73f73d45324eb0bb52f098fd5e6049bf6b8263be9b4e/httpcore2-2.16.0.tar.gz", hash = "sha256:c72cd0413563b17e1cd8354677dff887466f8ec2551679759e93126534428643", size = 69886, upload-time = "2026-10-21T07:09:45.31Z" }
 wheels = [
@@ -503,7 +503,7 @@ wheels = [
 
 [[package]]
 name = "promptli"
-version = "0.2.0"
+version = "0.2.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx" },
@@ -512,14 +512,14 @@ dependencies = [
     { name = "typer" },
     { name = "websockets" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/4c/ab/87c508a3a18b298adda0ceddc5b19ac49a1ab4969630eeb3568c7df1ce68/promptli-0.2.0.tar.gz", hash = "sha256:59ce5c3c3b49f087420bf7529c5a994b38944210633e8c191a701cc13d3f464e", size = 46182, upload-time = "2026-10-27T17:42:45.546Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/63/eb/40e907d4fec8c2d1ea03604e71e7621f8a2ba53a2099974b4e0e8ebd3782/promptli-0.2.2.tar.gz", hash = "sha256:aa31f51ec2ac06a760184f32d09c270b960c5b446051cd5a3879509eeeefb8bc", size = 49345, upload-time = "2026-11-19T02:38:32.988Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d6/5b/20889c28e5c388c94480c48db7bb2ec6bf8ef94bf56be21cf74e28485983/promptli-0.2.0-py3-none-any.whl", hash = "sha256:d48cbb94d2e0ed26b2f86f7ffef69c1937b75f9cff9738f50b4cb08b0c992757", size = 47072, upload-time = "2026-10-27T17:42:44.336Z" },
+    { url = "https://files.pythonhosted.org/packages/97/ab/608f662798aef32d43ff491643efe14398d44548316ec4bee7fdf7f23d3d/promptli-0.2.2-py3-none-any.whl", hash = "sha256:1363aeca0587f2aef0dca7d4e5deca457602da8c52970dee12986642f3d64af1", size = 49214, upload-time = "2026-11-19T02:38:31.747Z" },
 ]
 
 [[package]]
 name = "promptli-claude"
-version = "0.2.0"
+version = "0.2.1"
 source = { editable = "." }
 dependencies = [
     { name = "claude-agent-sdk" },
@@ -539,8 +539,8 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "claude-agent-sdk", specifier = ">=0.2.173" },
-    { name = "promptli", extras = ["cli"], specifier = ">=0.2.0,<0.3" },
-    { name = "promptli-gateway", specifier = ">=0.2.0,<0.3" },
+    { name = "promptli", extras = ["cli"], specifier = ">=0.2.2,<0.3" },
+    { name = "promptli-gateway", specifier = ">=0.2.2,<0.3" },
     { name = "typer", specifier = ">=0.15" },
 ]
 
@@ -554,16 +554,16 @@ dev = [
 
 [[package]]
 name = "promptli-gateway"
-version = "0.2.0"
+version = "0.2.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx" },
     { name = "mcp" },
     { name = "promptli" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/70/38/31bd40589cef98c32f179829f7944668ef33414873e2ec191bc34a40b572/promptli_gateway-0.2.0.tar.gz", hash = "sha256:3b75e4a24d8c51e69536e8f081df384451828072ad16ded59542c73df5d7e126", size = 32415, upload-time = "2026-10-27T17:43:08.15Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/fc/3c/4ee4216dcf238333cdc751a10dfc775f4b3209f058584097abd1ab05754f/promptli_gateway-0.2.2.tar.gz", hash = "sha256:7255a2e24ca2d595769ef00e8c1a5c4d492fa608263a4e0e287d4a0e1f78c7f6", size = 33494, upload-time = "2026-11-19T02:39:14.205Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/fe/33/148938a78c1db57d20fd0e3115b6d56c06782ce3c4370165a2b0ede76196/promptli_gateway-0.2.0-py3-none-any.whl", hash = "sha256:e8c83208dbc862712eea1dc02769a8bddfb076920cf3bece54b2026d1f316423", size = 34498, upload-time = "2026-10-27T17:43:06.643Z" },
+    { url = "https://files.pythonhosted.org/packages/9e/c8/8db1185a5aa91d2f6c6dcd3102a2348e898b2ad9d226b2c82ad27bb591f6/promptli_gateway-0.2.2-py3-none-any.whl", hash = "sha256:9a5a837cf0e2b1116c1c4fa0f19992b72743415f25967aa2231b9a466394c9a8", size = 34938, upload-time = "2026-11-19T02:39:12.81Z" },
 ]
 
 [[package]]
@@ -1105,8 +1105,8 @@ name = "uvicorn"
 version = "0.54.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "click", marker = "python_full_version < '3.12' or python_full_version >= '3.14' or sys_platform != 'emscripten'" },
-    { name = "h11", marker = "python_full_version < '3.12' or python_full_version >= '3.14' or sys_platform != 'emscripten'" },
+    { name = "click" },
+    { name = "h11" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/da/34/30e9280707135d2cfc589dfff3cb796bd07a3aeb1a3e415ba09dd89d7bb4/uvicorn-0.54.0.tar.gz", hash = "sha256:a2e33cbfaa0306f8e6b0c13e0cb89d7d7a2da3e62b90c66e18c33d9807b28620", size = 112283, upload-time = "2026-09-25T06:52:37.601Z" }
 wheels = [
