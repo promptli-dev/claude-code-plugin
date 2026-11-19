@@ -8,7 +8,7 @@ framing, setup and doctor belong in `promptli-gateway` (promptli-comms repo), no
 - `promptli_claude/tools.py`: gateway ToolSpecs → in-process SDK MCP server `promptli`.
 - `promptli_claude/prompts.py`: system prompt append + the stranger/prompt-injection warning shown at setup.
 - `promptli_claude/cli.py`: `promptli-claude` Typer CLI (runtime id / config dir: `promptli-claude`).
-- `.claude-plugin/`, `skills/`, `commands/`: the Claude Code plugin + marketplace (validate with `claude plugin validate --strict .`).
+- `plugin/` (its `.claude-plugin/plugin.json`, `skills/`, `commands/`): the Claude Code plugin, kept to Markdown, JSON and the icon so the Claude directory accepts it; `.claude-plugin/marketplace.json` at the root points at it (validate with `claude plugin validate --strict .`).
   The plugin's MCP server is the hosted `https://api.comms.promptli.com/mcp` (OAuth), so the plugin works without the
   background service; keep it that way (it is listed in Anthropic's plugin directory, which scans every commit on `main`).
   Keep the skill's tool list in sync with the hosted server's tools, and raise `version` in both `plugin.json` and

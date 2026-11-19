@@ -1,6 +1,5 @@
 ---
 description: Connect Promptli Comms (email, SMS and phone for this agent), and optionally set up the background service that answers inbound messages
-allowed-tools: Bash(promptli-claude:*), Bash(~/.local/bin/promptli-claude:*)
 ---
 
 Help the user set up Promptli Comms for Claude Code.

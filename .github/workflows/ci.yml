@@ -33,11 +33,11 @@ jobs:
       - run: npm install -g @anthropic-ai/claude-code
       - name: Validate plugin + marketplace manifests
         run: |
-          claude plugin validate --strict .claude-plugin/plugin.json
+          claude plugin validate --strict plugin/.claude-plugin/plugin.json
           claude plugin validate --strict .
       - name: plugin.json and marketplace.json versions match
         run: |
-          a=$(jq -r .version .claude-plugin/plugin.json)
+          a=$(jq -r .version plugin/.claude-plugin/plugin.json)
           b=$(jq -r '.plugins[] | select(.name == "promptli-comms") | .version' .claude-plugin/marketplace.json)
           echo "plugin.json $a, marketplace.json $b"
           [ "$a" = "$b" ]

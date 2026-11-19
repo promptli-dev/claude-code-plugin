@@ -1,6 +1,5 @@
 ---
 description: Show the Promptli agent's address and number, and whether the optional background service is running
-allowed-tools: Bash(promptli-claude:*), Bash(~/.local/bin/promptli-claude:*)
 ---
 
 Call the `whoami` tool from the `promptli` MCP server and report the agent and environment. If it
