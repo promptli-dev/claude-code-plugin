@@ -1,7 +1,7 @@
 {
   "name": "promptli-comms",
   "displayName": "Promptli Comms",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Give Claude its own email address and phone number: send and read email, text, place and schedule calls, and remember contacts through the hosted Promptli Comms MCP server (OAuth sign-in).",
   "author": {
     "name": "Promptli",
