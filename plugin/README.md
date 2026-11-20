@@ -22,8 +22,8 @@ Reach real people or cancel something, so they are marked for the client to ask 
 
 Writes only to Promptli: `add_contact_memory`.
 
-New accounts start in **test mode**, where emails, texts and calls are simulated and nothing reaches
-real people.
+New accounts are **live**: approved sends reach real people. For a dry run, use a test-mode key
+(`psk_test_`), where emails, texts and calls are simulated and nothing reaches real people.
 
 ## Data and network
 
